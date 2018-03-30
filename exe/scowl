@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'trollop'
+
+puts "Hello from the scowl gem! I don't do anything yet except emit this message. Sorry!"
