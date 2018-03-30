@@ -28,14 +28,22 @@ Options:
 
 * `-h`, `--help` - Show help message
 * `-p`, `--pretend` - Run scowl and emit its changes as a list of recommendations, but don't actually change things
+  `-s`, `--show` - Write output to console instead of updating Gemfile
 * `-m`, `--major` - Pessimize to major version, e.g. '~> 4.1', which locks major version but allows minor version to change
 * `-n`, `--minor` - Pessimize to minor version, e.g. '~> 4.1.3', which locks minor version but allows micro version to change
+* `-G`, `--no-gemspec` - Do not edit gemspec file even if Gemfile contains a 'gemspec' directive
 * `-t`, `--tighten` - Change existing pessimizations, but only if they would be tightened (only makes sense with `--minor`)
 * `-o`, `--override` - Set all pessimizations, even if they are already set and would be loosened
-* `-x`, `--exclude` - Exclude gem(s) (May be passed multiple times or pass comma-separated list, e.g. `--exclude=foo,bar,baz`
-* `-0`, `--nonsemantic-zero` - Tighten versions one level tighter if gem version begins with a zero (See note)
+* `-x`, `--exclude` - Exclude gem(s) if they would be changed (May be passed multiple times or pass comma-separated list, e.g. `--exclude=foo,bar,baz`.)
+* `-0`, `--nonsemantic-zero` - Tighten versions one level tighter if gem version begins with a zero (See note about Nonsemantic Zero below)
+* `-q`, `--quiet` - Do not raise warnings
+* `-a`, `--add-missing` - Add unlisted dependencies (STRONGLY recommend you run this is `--pretend` or `--show` mode first)
 
-If gem names are specified, ONLY those gems will be checked/modified.
+Notes:
+* If gem names are specified, ONLY those gems will be checked/modified
+* Exclude trumps everything, including naming a gem specifically. E.g. `gem -x foo,bar foo bar` will do nothing
+* Exclude can be used with -a to keep specific gems from being added, E.g. `gem
+* --add-missing combined with gem names will ONLY add the named gems. It will NOT add hidden dependencies for the named gems
 
 ## Nonsemantic Zero
 
@@ -50,7 +58,7 @@ Many gems do not adhere to semantic versioning while they are still in version z
 * [ ] Support tighten
   * [ ] Detect existing pessimization level
   * [ ] Know if specified level is tighter than existing level, e.g. `--minor` is tighter than `~> 4.1`, `--major` is tighter than `~> 4`
-* [ ] Can/should we parse into gemspec? For now, assume no.
+* [ ] Can/should we parse into gemspec? For now, assume no. For later... ehhh, seems very similarly parseable?
 * [ ] Don't mess up other options, e.g. `source` and `require` options
 * [ ] Implement nonsemantic zero support
 * [ ] Support named list of gems
@@ -58,6 +66,8 @@ Many gems do not adhere to semantic versioning while they are still in version z
 * [ ] Weird test/edge cases
   * [ ] Handle useless pessimization? E.g. Treat `~> 4`, which is essentially identical to `>= 4`, as tightening (don't set to major or minor unless `--tighten` specified)
 
+## TODO-Maybe:
+* [ ] If a gem is specified with no version but is not installed, should we gem search for it? No -- we're not gonna use `gem list` but rather `bundle show <gem>`; you should probably get bundle install working and specs passing before running scowl
 
 ## Development
 
